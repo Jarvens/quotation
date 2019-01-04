@@ -15,9 +15,9 @@ import (
 
 /**
 *
-* |  Header   | HeaderLen | Code | Version | RequestType | ClientType | Content | ContentLen|
+* |  Header   | HeaderLen | Version | RequestType | ClientType | Content | ContentLen|
 * -------------------------------------------------------------------------------------------
-* | quotation |     9     |   0  |   0x1   |     0x1     |    0x1     | abcdefg |     8     |
+* | quotation |     9     |   0x1   |     0x1     |    0x1     | abcdefg |     8     |
 *
 *
 **/
@@ -45,18 +45,29 @@ func IntToBytes(i int) []byte {
 }
 
 // encode message
-func Encode(message []byte) []byte {
-	buffer := make([]byte, 0)
-	buffer = append([]byte(Header))
-
-	headerBytes := append([]byte(Header), IntToBytes(HeaderLen)...)
-
-	return append(append([]byte(Header), IntToBytes(HeaderLen)...))
+func Encode(message []byte, request byte, client byte) []byte {
+	return append(append(append(append([]byte(Header),
+		Uint16ToByte(HeaderLen)...),
+		byte(Version),
+		byte(request),
+		byte(client)),
+		Uint16ToByte(uint16(len(message)))...),
+		message...)
 }
 
 //decode  message
-func Decode(buffer []byte, ch chan []byte) {
+func Decode(buffer []byte, ch chan []byte) []byte {
 
+	len := len(buffer)
+	for i := 0; i < len; i++ {
+		if len < HeaderLen {
+			break
+		}
+		//check header
+		if string(buffer[i:HeaderLen]) == Header {
+			message:=
+		}
+	}
 }
 
 //byte to hex
@@ -64,12 +75,14 @@ func ByteToHex(buffer []byte) string {
 	return hex.EncodeToString(buffer)
 }
 
+//uint16 to byte
+func Uint16ToByte(num uint16) []byte {
+	return []byte{byte(num), byte(num >> 8)}
+
+}
+
 // hex string to byte
 func HexToByte(str string) []byte {
 	value, _ := hex.DecodeString(str)
 	return value
 }
-
-//func Packet(message []byte) []byte {
-//	return append(append([]byte(ConstHeader), IntToBytes(len(message))...), message...)
-//}
