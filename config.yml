@@ -1,0 +1,3 @@
+appname: quotation-go
+socket:
+  port: 8085
