@@ -15,9 +15,10 @@ type TcpProtocol struct {
 	Header      string `json:"header"`
 	RequestType byte   `json:"requestType"`
 	ClientType  byte   `json:"clientType"`
-	Content     []byte `json:"content"`
+	Content     string `json:"content"`
 	HeaderLen   int16  `json:"headerLen"`
 	ContentLen  int16  `json:"contentLen"`
+	Crc         int32  `json:"crc"`
 }
 
 type Student struct {

@@ -9,6 +9,8 @@
 package main
 
 import (
+	"codec"
+	"encoding/json"
 	"fmt"
 	log "github.com/alecthomas/log4go"
 	"net"
@@ -38,15 +40,25 @@ func main() {
 
 func handler(conn net.Conn) {
 	defer conn.Close()
+	//byte Buffer cache
+	tmpBuffer := make([]byte, 0)
+	readChan := make(chan []byte, 16)
+	go readData(readChan)
+	buffer := make([]byte, 1024)
+
 	for {
-		buf := make([]byte, 1024)
-		log.Debug("BUF 地址：%p", &buf)
-		_, err := conn.Read(buf)
+		n, err := conn.Read(buffer)
 		if err != nil {
 			log.Debug("Server Read message error: ", err.Error())
 			return
 		}
-		log.Debug("Read message: %s", strings.TrimSpace(string(buf[:8])))
+		//tmpBuffer = codec.Decode(append(tmpBuffer, buffer[:n]...), readChan)
+		tmpBuffer = codec.Decode(buffer[:n], readChan)
+		obj := protocol.TcpProtocol{}
+
+		_ = json.Unmarshal(tmpBuffer, &obj)
+		log.Debug("Object", obj)
+		log.Debug("Read message: %s", strings.TrimSpace(string(tmpBuffer)))
 	}
 
 }
@@ -54,4 +66,20 @@ func handler(conn net.Conn) {
 //init
 func init() {
 	log.LoadConfiguration("log4go.xml")
+}
+
+//read  data
+func readData(readChan chan []byte) {
+
+	for {
+		select {
+		case data := <-readChan:
+			log.Debug(string(data))
+		}
+	}
+}
+
+//write data to client
+func writeData() {
+
 }

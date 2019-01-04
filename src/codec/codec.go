@@ -15,9 +15,9 @@ import (
 
 /**
 *
-* |  Header   | HeaderLen | Version | RequestType | ClientType | Content | ContentLen|
+* |  Header   | HeaderLen | Version | RequestType | ClientType | Content | ContentLen|  Crc  |
 * -------------------------------------------------------------------------------------------
-* | quotation |     9     |   0x1   |     0x1     |    0x1     | abcdefg |     8     |
+* | quotation |     9     |   0x1   |     0x1     |    0x1     |   abc   |     3     |  34354|
 *
 *
 **/
@@ -37,8 +37,8 @@ func BytesToInt(b []byte) int {
 }
 
 //int to byte  bigEndian pattern
-func IntToBytes(i int) []byte {
-	value := int32(i)
+func IntToBytes(val int) []byte {
+	value := int32(val)
 	byteBuffer := bytes.NewBuffer([]byte{})
 	binary.Write(byteBuffer, binary.BigEndian, value)
 	return byteBuffer.Bytes()
@@ -57,17 +57,28 @@ func Encode(message []byte, request byte, client byte) []byte {
 
 //decode  message
 func Decode(buffer []byte, ch chan []byte) []byte {
-
+	var i int
 	len := len(buffer)
-	for i := 0; i < len; i++ {
+	for i = 0; i < len; i++ {
 		if len < HeaderLen {
 			break
 		}
 		//check header
 		if string(buffer[i:HeaderLen]) == Header {
-			message:=
+			messageLen := BytesToInt(buffer[i+HeaderLen : i+HeaderLen+4])
+			if len < i+HeaderLen+4+messageLen {
+				break
+			}
+			data := buffer[i+HeaderLen+4 : i+HeaderLen+4+messageLen]
+			ch <- data
+			i += HeaderLen + 4 + messageLen - 1
 		}
 	}
+	if i == len {
+		return make([]byte, 0)
+	}
+
+	return buffer[i:]
 }
 
 //byte to hex
@@ -76,8 +87,8 @@ func ByteToHex(buffer []byte) string {
 }
 
 //uint16 to byte
-func Uint16ToByte(num uint16) []byte {
-	return []byte{byte(num), byte(num >> 8)}
+func Uint16ToByte(val uint16) []byte {
+	return []byte{byte(val), byte(val >> 8)}
 
 }
 

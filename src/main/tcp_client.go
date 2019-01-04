@@ -8,6 +8,7 @@
 package main
 
 import (
+	"codec"
 	"encoding/json"
 	"fmt"
 	log "github.com/alecthomas/log4go"
@@ -26,19 +27,14 @@ func main() {
 
 	defer conn.Close()
 
-	pro := protocol.TcpProtocol{Code: 0x1, Version: protocol.Version, Header: protocol.Header, RequestType: 0x3, ClientType: 0x4}
 	for {
 		content := protocol.Student{Name: "张三", Age: 18}
 		contentStr, _ := json.Marshal(content)
-		pro.Content = contentStr
 		log.Debug("Json: %s", string(contentStr))
-		//timeInput := strings.Trim(pro, "\r\n")
-		//if timeInput == "q" {
-		//	return
-		//}
-		time.Sleep(2 * time.Millisecond)
+
+		time.Sleep(2000 * time.Millisecond)
 		log.Debug("开始写入消息")
-		_, err := conn.Write([]byte("Hello"))
+		_, err := conn.Write(codec.Encode([]byte(contentStr), 0x1, 0x1))
 		if err != nil {
 			return
 		}
