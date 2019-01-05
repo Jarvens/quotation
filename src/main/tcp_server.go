@@ -39,6 +39,7 @@ func main() {
 }
 
 func handler(conn net.Conn) {
+	//close current  user conn
 	defer conn.Close()
 	//byte Buffer cache
 	tmpBuffer := make([]byte, 0)

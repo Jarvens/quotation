@@ -1,14 +1,15 @@
 /**
 * @auth    kunlun
-* @date    2019-01-04 22:32
+* @date    2019-01-04 11:27
 * @version v1.0
-* @des     描述：Hash
+* @des     描述：工具类
 *
 **/
-package hash
+package utils
 
 import (
 	"crypto/md5"
+	"hash/crc32"
 )
 
 const (
@@ -16,13 +17,12 @@ const (
 )
 
 //get crc32 hash
-func Crc32(bytes []byte) int32 {
-
-	return 0
+func Crc32(bytes []byte) uint32 {
+	return crc32.ChecksumIEEE(bytes)
 }
 
 //check crc32 sum
-func CheckSum(src, dest int32) bool {
+func CheckCrc(src, dest uint32) bool {
 	if src == dest {
 		return true
 	}

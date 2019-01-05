@@ -1,10 +1,5 @@
-/**
-* @auth    kunlun
-* @date    2019-01-04 15:32
-* @version v1.0
-* @des     描述：编解码
-*
-**/
+// Codec
+// copyright @2019
 package codec
 
 import (
