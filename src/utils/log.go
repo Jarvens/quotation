@@ -20,6 +20,6 @@ func Info(arg0 interface{}, args ...interface{}) {
 }
 
 // war
-func Warn(arg0 interface{}, args interface{}) {
+func Warn(arg0 interface{}, args ...interface{}) {
 	log.Warn(arg0, args)
 }

@@ -6,29 +6,35 @@ package config
 import (
 	"fmt"
 	"github.com/jinzhu/configor"
+	log "utils"
 )
 
-type MqConfig struct {
-	username string
-	password string
-	vhost    string
-	host     string
-	port     string
+type Config struct {
+	Username string
+	Password string
+	Vhost    string
+	Host     string
+	Port     int
 }
 
 // initial MQ
 func InitRMQ() {
 	prop := LoadConfig()
-	fmt.Printf("MQ配置文件是：%v", prop)
-}
+	fmt.Printf("config info username: %s, password: %s, vhost: %s, host: %s, port: %d ", prop.Username, prop.Password, prop.Vhost, prop.Host, prop.Port)
 
-func init() {
-	fmt.Println("初始化函数")
 }
 
 // load mq config
-func LoadConfig() *MqConfig {
-	properties := MqConfig{}
-	configor.Load(&properties, "config.yml")
-	return &properties
+func LoadConfig() *Config {
+	var config = Config{}
+
+	// test must use absolution address
+	configor.Load(&config, "../../rabbitmq.yml")
+	return &config
+}
+
+func errorHandler(err error, message string) {
+	if err != nil {
+		log.Info("%s: %s", message, err.Error())
+	}
 }
