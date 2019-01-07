@@ -1,14 +1,16 @@
+// auth: kunlun
+// date: 2019-01-07
 package protocol
 
-/**
-* @auth    kunlun
-* @date    2019-01-04 09:27
-* @version v1.0
-* @des     描述：协议
-*
-**/
+//quote protocol
+type QuoteProtocol struct {
+	Magic string `json:"magic"`
+	Len   int16  `json:"len"`
+	Data  string `json:"data"`
+	Crc32 int32  `json:"crc32"`
+}
 
-//base protocol
+//push protocol
 type TcpProtocol struct {
 	Code        byte   `json:"code"`
 	Version     byte   `json:"version"`
@@ -33,8 +35,9 @@ type BaseReq struct {
 const (
 	Header  = "Quotation"
 	Version = 0x1
+	Magic   = "magicNyxV0.1"
 )
 
-func Instance() TcpProtocol {
+func NewProtocol() TcpProtocol {
 	return TcpProtocol{Header: Header, Version: Version}
 }

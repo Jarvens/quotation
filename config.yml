@@ -1,3 +1,10 @@
 appname: quotation-go
 socket:
   port: 8085
+rabbitmq:
+  username: guest
+  password: guest
+  vhost: /
+  host: localhost
+  port: 5672
+
