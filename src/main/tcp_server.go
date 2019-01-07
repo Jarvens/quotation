@@ -12,19 +12,21 @@ import (
 	"codec"
 	"encoding/json"
 	"fmt"
-	log "github.com/alecthomas/log4go"
 	"net"
 	"protocol"
 	"strings"
+	"time"
+	log "utils"
 )
 
 func main() {
 
 	var pro = protocol.TcpProtocol{Version: protocol.Version, Header: protocol.Header}
 	fmt.Println("打印协议体：", pro)
-	fmt.Println("server starting ...")
+	log.Debug("tcp-server starting ... now: %s", time.Now())
 	listener, err := net.Listen("tcp", "0.0.0.0:1234")
 	if err != nil {
+
 		log.Debug("Fatal error: ", err.Error())
 		return
 	}
@@ -62,11 +64,6 @@ func handler(conn net.Conn) {
 		log.Debug("Read message: %s", strings.TrimSpace(string(tmpBuffer)))
 	}
 
-}
-
-//init
-func init() {
-	log.LoadConfiguration("log4go.xml")
 }
 
 //read  data
