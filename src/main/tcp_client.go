@@ -8,7 +8,8 @@
 package main
 
 import (
-	"codec"
+	"common"
+	"config"
 	"encoding/json"
 	"fmt"
 	log "github.com/alecthomas/log4go"
@@ -18,7 +19,6 @@ import (
 )
 
 func main() {
-
 	conn, err := net.Dial("tcp", "0.0.0.0:1234")
 	if err != nil {
 		fmt.Println("Connection Fatal error: ", err.Error())
@@ -32,12 +32,13 @@ func main() {
 		contentStr, _ := json.Marshal(content)
 		log.Debug("Json: %s", string(contentStr))
 
-		time.Sleep(2000 * time.Millisecond)
+		time.Sleep(1 * time.Millisecond)
 		log.Debug("开始写入消息")
-		_, err := conn.Write(codec.Encode([]byte(contentStr), 0x1, 0x1))
-		if err != nil {
-			return
-		}
+		config.Publish(common.Qexchange, common.Queue, []byte("hello"))
+		//_, err := conn.Write(codec.Encode([]byte(contentStr), 0x1, 0x1))
+		//if err != nil {
+		//	return
+		//}
 
 	}
 

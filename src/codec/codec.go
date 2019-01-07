@@ -92,3 +92,9 @@ func HexToByte(str string) []byte {
 	value, _ := hex.DecodeString(str)
 	return value
 }
+
+func ByteToString(b *[]byte) *string {
+	str := bytes.NewBuffer(*b)
+	result := str.String()
+	return &result
+}
