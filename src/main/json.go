@@ -5,22 +5,13 @@
 package main
 
 import (
-	"encoding/json"
+	"codec"
+	"encoding/hex"
 	"fmt"
 )
 
-type header struct {
-	Encryption  string `json:"encryption"`
-	Timestamp   int64  `json:"timestamp"`
-	Key         string `json:"key"`
-	Parthercode int    `json:"parthercode"`
-}
-
 func main() {
 
-	headerObj := header{}
-
-	headerString := `{"encryption":"md5","timestamp":1482463793,"key":"325436534","parthercode":1002}`
-	_ = json.Unmarshal([]byte(headerString), &headerObj)
-	fmt.Println("json ", headerObj)
+	var data uint16 = 140
+	fmt.Println(hex.EncodeToString(codec.Uint16ToByte(data)))
 }

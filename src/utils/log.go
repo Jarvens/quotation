@@ -19,7 +19,7 @@ func Info(arg0 interface{}, args ...interface{}) {
 	log.Info(arg0, args)
 }
 
-// war
+// warn
 func Warn(arg0 interface{}, args ...interface{}) {
 	log.Warn(arg0, args)
 }

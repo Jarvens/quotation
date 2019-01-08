@@ -8,3 +8,11 @@ import "testing"
 func TestStart(t *testing.T) {
 	Start()
 }
+
+// 基准测试
+func BenchmarkStart(b *testing.B) {
+	var n int
+	for n = 0; n < b.N; n++ {
+		n++
+	}
+}

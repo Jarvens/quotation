@@ -3,7 +3,7 @@
 package protocol
 
 //quote protocol
-type QuoteProtocol struct {
+type QuoteProto struct {
 	Magic string `json:"magic"`
 	Len   int16  `json:"len"`
 	Data  string `json:"data"`

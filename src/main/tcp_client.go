@@ -8,14 +8,13 @@
 package main
 
 import (
-	"common"
-	"config"
+	"codec"
+	"domain"
 	"encoding/json"
 	"fmt"
-	log "github.com/alecthomas/log4go"
 	"net"
-	"protocol"
 	"time"
+	log "utils"
 )
 
 func main() {
@@ -28,17 +27,15 @@ func main() {
 	defer conn.Close()
 
 	for {
-		content := protocol.Student{Name: "张三", Age: 18}
-		contentStr, _ := json.Marshal(content)
-		log.Debug("Json: %s", string(contentStr))
 
-		time.Sleep(1 * time.Millisecond)
-		log.Debug("开始写入消息")
-		config.Publish(common.Qexchange, common.Queue, []byte("hello"))
-		//_, err := conn.Write(codec.Encode([]byte(contentStr), 0x1, 0x1))
-		//if err != nil {
-		//	return
-		//}
+		data := domain.ResponseData{Dir: "bid", Symbol: "USDT_BTC", Ts: time.Now().UnixNano(), Amount: 0.2, Price: 0.1, DayVolume: 10, DayPrice: 0.5, DayHigh: 0.5, DayLow: 0.2}
+		dataStr, _ := json.Marshal(data)
+		_, err := conn.Write(codec.QuoteEncode(dataStr))
+		log.Info("start send message time: %d ", time.Now().UnixNano())
+		time.Sleep(5 * time.Millisecond)
+		if err != nil {
+			return
+		}
 
 	}
 

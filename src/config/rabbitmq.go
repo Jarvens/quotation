@@ -4,6 +4,7 @@
 package config
 
 import (
+	"codec"
 	"common"
 	"fmt"
 	"github.com/jinzhu/configor"
@@ -36,7 +37,7 @@ func loadConfig() *Config {
 	var config = Config{}
 
 	// test must use absolution address
-	configor.Load(&config, "rabbitmq.yml")
+	configor.Load(&config, "../../rabbitmq.yml")
 	return &config
 }
 
@@ -49,10 +50,10 @@ func errorHandler(err error, message string) {
 }
 
 func init() {
-	connect()
+	rabbitConn()
 }
 
-func connect() (err error) {
+func rabbitConn() (err error) {
 	prop := loadConfig()
 	url := "amqp://" + prop.Username + ":" + prop.Password + "@" + prop.Host + ":" + prop.Port + "/"
 	if channel == nil {
@@ -79,17 +80,19 @@ func Publish(exchange, queue string, message []byte) {
 	channel.Publish(exchange, queue, false, false, amqp.Publishing{ContentType: "text/plain", Body: message})
 }
 
-// 闭包函数接收消息队列
-
-func Receive() {
+// receive message from mq
+func Receive(queue string) {
 	if channel == nil {
-		connect()
+		rabbitConn()
 	}
-	msg, err := channel.Consume(common.Queue, "", true, false, false, false, nil)
+	msg, err := channel.Consume(queue, "", true, false, false, false, nil)
+	errorHandler(err, "consume message error")
 	sync := make(chan bool)
 	go func() {
 		for d := range msg {
-			fmt.Println(string(d))
+			s := codec.ByteToString(&(d.Body))
+			fmt.Println("receive message is: ", s)
 		}
 	}()
+	<-sync
 }

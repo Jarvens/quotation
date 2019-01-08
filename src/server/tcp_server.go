@@ -5,9 +5,9 @@ package server
 
 import (
 	"codec"
+	"domain"
 	"encoding/json"
 	"net"
-	"protocol"
 	"time"
 	log "utils"
 )
@@ -26,7 +26,6 @@ func Start() {
 			log.Info("Accept error: %v", err.Error())
 			continue
 		}
-
 		go loopHandler(conn)
 	}
 
@@ -50,11 +49,11 @@ func loopHandler(conn net.Conn) {
 			log.Info("read message error: %v", err.Error())
 			return
 		}
-		tmpBuffer = codec.Decode(buffer[:n], readChan)
-		obj := protocol.TcpProtocol{}
+
+		tmpBuffer = codec.QuoteDecode(buffer[:n], readChan)
+		obj := domain.ResponseData{}
 		_ = json.Unmarshal(tmpBuffer, &obj)
-		log.Info("object info: %v", obj)
-		log.Info("string info: %v", string(tmpBuffer))
+		log.Info("receive message: %v", string(tmpBuffer))
 	}
 }
 

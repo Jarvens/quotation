@@ -8,12 +8,35 @@
 package codec
 
 import (
+	"domain"
+	"encoding/json"
 	"fmt"
 	"testing"
+	"time"
 )
 
 func Test_Encode(t *testing.T) {
-	buffer := Encode([]byte("这是测试协议消息体"), 0x1, 0x1)
+	buffer := Encode([]byte("test message protocol"), 0x1, 0x1)
 	hexString := ByteToHex(buffer)
-	fmt.Println("协议码：", hexString)
+	fmt.Println("encode protocol Hex：", hexString)
+
+	ch := make(chan []byte, 16)
+	bytes := Decode(buffer, ch)
+	fmt.Println("decode : ", string(bytes))
+}
+
+func TestQuoteEncode(t *testing.T) {
+	data := domain.ResponseData{Dir: "bid", Symbol: "USDT_BTC", Ts: time.Now().UnixNano(), Amount: 0.2, Price: 0.1, DayVolume: 10, DayPrice: 0.5, DayHigh: 0.5, DayLow: 0.2}
+	result, _ := json.Marshal(data)
+	fmt.Printf("encode json: %v\r\n", string(result))
+	var resultBytes []byte
+	resultBytes = QuoteEncode(result)
+
+	readChan := make(chan []byte, 16)
+	byte1 := QuoteDecode(resultBytes, readChan)
+	var pro = domain.ResponseData{}
+	json.Unmarshal(byte1, &pro)
+	fmt.Printf("decode object: %v \r\n", pro)
+	fmt.Println("decode result: ", string(byte1))
+
 }
