@@ -40,3 +40,24 @@ func TestQuoteEncode(t *testing.T) {
 	fmt.Println("decode result: ", string(byte1))
 
 }
+
+// benchmark test
+// 200000 count invoke        5850 ns/op   1.3s   total
+// go test -run=codec_test.go -bench=BenchmarkQuoteDecode
+func BenchmarkQuoteDecode(b *testing.B) {
+
+	for i := 0; i < b.N; i++ {
+		data := domain.ResponseData{Dir: "bid", Symbol: "USDT_BTC", Ts: time.Now().UnixNano(), Amount: 0.2, Price: 0.1, DayVolume: 10, DayPrice: 0.5, DayHigh: 0.5, DayLow: 0.2}
+		result, _ := json.Marshal(data)
+		//fmt.Printf("encode json: %v\r\n", string(result))
+		var resultBytes []byte
+		resultBytes = QuoteEncode(result)
+		//fmt.Println(resultBytes)
+		readChan := make(chan []byte, 16)
+		byte1 := QuoteDecode(resultBytes, readChan)
+		var pro = domain.ResponseData{}
+		json.Unmarshal(byte1, &pro)
+		//fmt.Printf("decode object: %v \r\n", pro)
+		//fmt.Println("decode result: ", string(byte1))
+	}
+}

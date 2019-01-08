@@ -6,7 +6,6 @@ import (
 	"bytes"
 	"encoding/binary"
 	"encoding/hex"
-	"fmt"
 	"utils"
 )
 
@@ -72,7 +71,7 @@ func QuoteDecode(buffer []byte, ch chan []byte) []byte {
 	var i int
 	len := len(buffer)
 	var messageLen uint16
-	fmt.Println("comming len: ", len)
+	//fmt.Println("comming len: ", len)
 	for i = 0; i < len; i++ {
 		if len < int(QuoteHeaderLen) {
 			break
@@ -81,7 +80,7 @@ func QuoteDecode(buffer []byte, ch chan []byte) []byte {
 		if string(buffer[i:QuoteHeaderLen]) == QuoteHeader {
 			messageLen = ByteToUint16(buffer[i+QuoteHeaderLen : i+QuoteHeaderLen+2])
 
-			fmt.Println("now len: ", messageLen)
+			//fmt.Println("now len: ", messageLen)
 			if len <= i+QuoteHeaderLen+2+int(messageLen)+4 {
 				break
 			}
