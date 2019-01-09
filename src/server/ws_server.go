@@ -41,7 +41,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 			if err = conn.WriteMessage([]byte("pong address" + conn.wsConnect.RemoteAddr().String())); err != nil {
 				return
 			}
-			time.Sleep(1000 * time.Millisecond)
+			time.Sleep(10 * time.Millisecond)
 		}
 	}()
 
