@@ -27,6 +27,7 @@ func Start() {
 			log.Info("Accept error: %v", err.Error())
 			continue
 		}
+		log.Info("client address: %s", conn.RemoteAddr())
 		go loopHandler(conn)
 	}
 
@@ -34,7 +35,7 @@ func Start() {
 
 //initial load config
 func init() {
-	log.Debug("tcp server initial func: %v", time.Now())
+	log.Debug("tcp server initial func: %v", time.Now().UnixNano())
 }
 
 //
@@ -46,10 +47,9 @@ func loopHandler(conn net.Conn) {
 	go readData(readChan)
 	buffer := make([]byte, 1024)
 	for {
+
 		n, err := conn.Read(buffer)
 		if err != nil {
-
-			//TODO 处理tcp主动断开
 			log.Info("read message error: %v", err.Error())
 			return
 		}

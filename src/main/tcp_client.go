@@ -32,11 +32,9 @@ func main() {
 		dataStr, _ := json.Marshal(data)
 		_, err := conn.Write(codec.QuoteEncode(dataStr))
 		log.Info("start send message time: %d ", time.Now().UnixNano())
-		time.Sleep(5 * time.Millisecond)
+		time.Sleep(2 * time.Second)
 		if err != nil {
 			return
 		}
-
 	}
-
 }
