@@ -4,7 +4,6 @@
 package config
 
 import (
-	"common"
 	"testing"
 )
 
@@ -14,8 +13,8 @@ func TestInitRMQ(t *testing.T) {
 }
 
 // testing publish message
-func TestPublish(t *testing.T) {
-	for i := 0; i < 1000; i++ {
-		Publish(common.Qexchange, common.Queue, []byte("hello"))
-	}
-}
+//func TestPublish(t *testing.T) {
+//	for i := 0; i < 1000; i++ {
+//		Publish(common.Qexchange, common.Queue, []byte("hello"))
+//	}
+//}

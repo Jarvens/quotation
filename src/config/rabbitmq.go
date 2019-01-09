@@ -17,19 +17,38 @@ var conn *amqp.Connection
 var channel *amqp.Channel
 var connected bool = false
 
+type Exchange struct {
+	Name  string
+	Type  string
+	Queue []*Queue
+}
+
+type Queue struct {
+	Name string
+	Key  string
+}
+
 type Config struct {
-	Username string
-	Password string
-	Vhost    string
-	Host     string
-	Port     string
+	Rabbitmq struct {
+		Username    string
+		Password    string
+		Vhost       string
+		Host        string
+		Port        string
+		Persistence []*Exchange
+	}
 }
 
 // initial MQ
 func InitRMQ() {
-	prop := loadConfig()
-	fmt.Printf("config info username: %s, password: %s, vhost: %s, host: %s, port: %s ", prop.Username, prop.Password, prop.Vhost, prop.Host, prop.Port)
-
+	config := loadConfig()
+	fmt.Printf("config info username: %s, password: %s, vhost: %s, host: %s, port: %s \r\n", config.Rabbitmq.Username, config.Rabbitmq.Password, config.Rabbitmq.Vhost, config.Rabbitmq.Host, config.Rabbitmq.Port)
+	for _, val := range config.Rabbitmq.Persistence {
+		fmt.Printf("exchange: name: %s  type: %s\r\n", val.Name, val.Type)
+		for _, q := range val.Queue {
+			fmt.Printf("queue: name: %s  key: %s\r\n", q.Name, q.Key)
+		}
+	}
 }
 
 // load mq config
@@ -37,7 +56,7 @@ func loadConfig() *Config {
 	var config = Config{}
 
 	// test must use absolution address
-	configor.Load(&config, "../../rabbitmq.yml")
+	configor.Load(&config, "../../config.json")
 	return &config
 }
 
@@ -54,8 +73,8 @@ func init() {
 }
 
 func rabbitConn() (err error) {
-	prop := loadConfig()
-	url := "amqp://" + prop.Username + ":" + prop.Password + "@" + prop.Host + ":" + prop.Port + "/"
+	config := loadConfig()
+	url := "amqp://" + config.Rabbitmq.Username + ":" + config.Rabbitmq.Password + "@" + config.Rabbitmq.Host + ":" + config.Rabbitmq.Port + "/"
 	if channel == nil {
 		var config = amqp.Config{ChannelMax: 10}
 		conn, err = amqp.DialConfig(url, config)
@@ -95,4 +114,8 @@ func Receive(queue string) {
 		}
 	}()
 	<-sync
+}
+
+func exchangeType() {
+
 }

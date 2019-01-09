@@ -7,9 +7,25 @@
   },
   "rabbitmq": {
     "host": "localhost",
-    "port": 5672,
+    "port": "5672",
     "vhost": "/",
     "username": "guest",
-    "password": "guest"
+    "password": "guest",
+    "persistence": [
+      {
+        "name": "go.direct.exchange",
+        "type": "direct",
+        "queue": [
+          {
+            "name": "go.queue1",
+            "key": "bind1"
+          },
+          {
+            "name": "go.queue2",
+            "key": "bind2"
+          }
+        ]
+      }
+    ]
   }
 }

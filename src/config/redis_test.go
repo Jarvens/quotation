@@ -6,5 +6,5 @@ package config
 import "testing"
 
 func TestInitial(t *testing.T) {
-	Initial()
+
 }

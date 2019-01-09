@@ -1,9 +1,9 @@
 // auth: kunlun
 // date: 2019-01-07
-package protocol
+package codec
 
 //quote protocol
-type QuoteProto struct {
+type BaseProto struct {
 	Magic string `json:"magic"`
 	Len   int16  `json:"len"`
 	Data  string `json:"data"`
@@ -26,18 +26,4 @@ type TcpProtocol struct {
 type Student struct {
 	Name string `json:"name"`
 	Age  int    `json:"age"`
-}
-
-//request
-type BaseReq struct {
-}
-
-const (
-	Header  = "Quotation"
-	Version = 0x1
-	Magic   = "magicNyxV0.1"
-)
-
-func NewProtocol() TcpProtocol {
-	return TcpProtocol{Header: Header, Version: Version}
 }

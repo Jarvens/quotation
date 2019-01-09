@@ -6,7 +6,7 @@ import log "github.com/alecthomas/log4go"
 
 // initial log4go
 func init() {
-	log.LoadConfiguration("log4go.xml")
+	log.LoadConfiguration("../../log4go.xml")
 }
 
 // debug
