@@ -8,9 +8,12 @@
 package main
 
 import (
+	"net/http"
 	"server"
 )
 
 func main() {
-	server.Start()
+	//server.Start()
+	http.HandleFunc("/", server.Handler)
+	http.ListenAndServe("0.0.0.0:1235", nil)
 }
