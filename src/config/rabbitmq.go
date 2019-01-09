@@ -5,7 +5,6 @@ package config
 
 import (
 	"codec"
-	"common"
 	"fmt"
 	"github.com/jinzhu/configor"
 	"github.com/streadway/amqp"
@@ -18,24 +17,26 @@ var channel *amqp.Channel
 var connected bool = false
 
 type Exchange struct {
-	Name  string
-	Type  string
-	Queue []*Queue
+	Name    string
+	Type    string
+	Queue   []Queue
+	Durable bool
 }
 
 type Queue struct {
-	Name string
-	Key  string
+	Name    string
+	Key     string
+	Durable bool
 }
 
 type Config struct {
 	Rabbitmq struct {
-		Username    string
-		Password    string
-		Vhost       string
-		Host        string
-		Port        string
-		Persistence []*Exchange
+		Username string
+		Password string
+		Vhost    string
+		Host     string
+		Port     string
+		Exchange []Exchange
 	}
 }
 
@@ -43,7 +44,7 @@ type Config struct {
 func InitRMQ() {
 	config := loadConfig()
 	fmt.Printf("config info username: %s, password: %s, vhost: %s, host: %s, port: %s \r\n", config.Rabbitmq.Username, config.Rabbitmq.Password, config.Rabbitmq.Vhost, config.Rabbitmq.Host, config.Rabbitmq.Port)
-	for _, val := range config.Rabbitmq.Persistence {
+	for _, val := range config.Rabbitmq.Exchange {
 		fmt.Printf("exchange: name: %s  type: %s\r\n", val.Name, val.Type)
 		for _, q := range val.Queue {
 			fmt.Printf("queue: name: %s  key: %s\r\n", q.Name, q.Key)
@@ -76,8 +77,8 @@ func rabbitConn() (err error) {
 	config := loadConfig()
 	url := "amqp://" + config.Rabbitmq.Username + ":" + config.Rabbitmq.Password + "@" + config.Rabbitmq.Host + ":" + config.Rabbitmq.Port + "/"
 	if channel == nil {
-		var config = amqp.Config{ChannelMax: 10}
-		conn, err = amqp.DialConfig(url, config)
+		var mqConfig = amqp.Config{ChannelMax: 10}
+		conn, err = amqp.DialConfig(url, mqConfig)
 		if err != nil {
 			return err
 		}
@@ -86,9 +87,28 @@ func rabbitConn() (err error) {
 		if err != nil {
 			return err
 		}
-		channel.ExchangeDeclare(common.Qexchange, amqp.ExchangeDirect, true, false, false, true, nil)
-		channel.QueueDeclare(common.Queue, true, false, false, false, nil)
-		channel.QueueBind(common.Queue, common.Queue, common.Qexchange, false, nil)
+
+		var ex []Exchange
+		ex = config.Rabbitmq.Exchange
+		if cap(ex) != 0 {
+			for _, e := range ex {
+
+				// declare exchange
+				channel.ExchangeDeclare(e.Name, selectExchange(e.Type), true, false, false, true, nil)
+				var queue []Queue
+				queue = e.Queue
+				if cap(queue) != 0 {
+					for _, q := range queue {
+						if (Queue{} != q) {
+							// declare queue
+							channel.QueueDeclare(q.Name, true, false, false, false, nil)
+							// bind exchange
+							channel.QueueBind(q.Name, q.Key, e.Name, false, nil)
+						}
+					}
+				}
+			}
+		}
 		connected = true
 	}
 	return nil
@@ -116,6 +136,23 @@ func Receive(queue string) {
 	<-sync
 }
 
-func exchangeType() {
+// exchange select
+func selectExchange(exchangeType string) (str string) {
+
+	switch exchangeType {
+	case "direct":
+		return amqp.ExchangeDirect
+	case "fanout":
+		return amqp.ExchangeFanout
+	case "topic":
+		return amqp.ExchangeTopic
+	case "headers":
+		return amqp.ExchangeHeaders
+	default:
+		return amqp.ExchangeDirect
+	}
+}
+
+func isEmpty(val interface{}) {
 
 }

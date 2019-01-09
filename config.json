@@ -11,21 +11,26 @@
     "vhost": "/",
     "username": "guest",
     "password": "guest",
-    "persistence": [
+    "exchange": [
       {
         "name": "go.direct.exchange",
         "type": "direct",
+        "durable": true,
         "queue": [
           {
             "name": "go.queue1",
-            "key": "bind1"
+            "key": "bind1",
+            "durable": true
           },
           {
             "name": "go.queue2",
-            "key": "bind2"
+            "key": "bind2",
+            "durable": true
           }
         ]
       }
     ]
+  },
+  "database": {
   }
 }
