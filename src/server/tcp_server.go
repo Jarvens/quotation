@@ -22,6 +22,7 @@ func Start() {
 
 	for {
 		conn, err := listener.Accept()
+
 		if err != nil {
 			log.Info("Accept error: %v", err.Error())
 			continue
@@ -38,6 +39,7 @@ func init() {
 
 //
 func loopHandler(conn net.Conn) {
+
 	defer conn.Close()
 	tmpBuffer := make([]byte, 0)
 	readChan := make(chan []byte, 16)
@@ -46,6 +48,8 @@ func loopHandler(conn net.Conn) {
 	for {
 		n, err := conn.Read(buffer)
 		if err != nil {
+
+			//TODO 处理tcp主动断开
 			log.Info("read message error: %v", err.Error())
 			return
 		}
